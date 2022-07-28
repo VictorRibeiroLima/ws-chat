@@ -11,7 +11,7 @@ type Client struct {
 	ID   string
 	Nick string
 	Conn *websocket.Conn
-	Pool *Pool
+	Room *Room
 }
 
 type Message struct {
@@ -26,7 +26,7 @@ type Payload struct {
 
 func (c *Client) Read() {
 	defer func() {
-		c.Pool.Unregister <- c
+		c.Room.Unregister <- c
 		c.Conn.Close()
 	}()
 
