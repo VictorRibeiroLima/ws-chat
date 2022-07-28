@@ -68,7 +68,15 @@ func listRooms(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	w.Write(responseBody)
+}
+
+func addRoom(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
+	room := websocket.NewRoom()
+	pool.Register <- room
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, "Room added")
 }
 
 func setupRoutes() {
@@ -76,8 +84,7 @@ func setupRoutes() {
 	go pool.Start()
 
 	http.HandleFunc("/room", func(w http.ResponseWriter, r *http.Request) {
-		room := websocket.NewRoom()
-		pool.Rooms[room.ID] = room
+		addRoom(pool, w, r)
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
