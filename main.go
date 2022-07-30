@@ -13,6 +13,10 @@ import (
 )
 
 func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
+	nick := r.URL.Query().Get("nick")
+	if nick == "" {
+		nick = "anonymous"
+	}
 	param := strings.TrimPrefix(r.URL.Path, "/ws/")
 	id, err := strconv.Atoi(param)
 	if err != nil {
@@ -36,7 +40,7 @@ func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
 
 	client := &websocket.Client{
 		ID:   util.RandomString(),
-		Nick: "anonymous",
+		Nick: nick,
 		Conn: conn,
 		Room: room,
 	}
@@ -88,6 +92,7 @@ func setupRoutes() {
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		listRooms(pool, w, r)
 	})
 
@@ -97,8 +102,8 @@ func setupRoutes() {
 }
 
 func main() {
-	fmt.Println("Server started on port 8080")
+	fmt.Println("Server started on port 3000")
 	setupRoutes()
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":3000", nil)
 
 }

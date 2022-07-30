@@ -34,11 +34,11 @@ func (room *Room) listen() {
 		select {
 		case client := <-room.Register:
 			{
-				room.Clients[client.ID] = client
 				for id, client := range room.Clients {
 					fmt.Printf("Client with id %s entered room %d \n", id, room.ID)
 					client.Conn.WriteJSON(Message{Nick: "Server", Body: "New User Joined:" + client.Nick})
 				}
+				room.Clients[client.ID] = client
 				fmt.Println("Size of Connection Room: ", len(room.Clients))
 			}
 		case client := <-room.Unregister:
